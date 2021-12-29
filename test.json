@@ -1,0 +1,31 @@
+{
+  "family": {
+    "father": {
+      "name": "Andrew",
+      "age": 30
+    },
+    "mother": {
+      "name": "Jill",
+      "age": 31
+    },
+    "children": [
+      {
+        "name": "Adelyn",
+        "age": 5
+      },
+      {
+        "name": "Evelyn",
+        "age": 3
+      },
+      {
+        "name": "Emmalyn",
+        "age": 1
+      },
+      {
+        "name": "Annabelle",
+        "age": 0
+      }
+    ]
+  },
+  "home": "2604 Georgia Avenee"
+}
