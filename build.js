@@ -1,4 +1,4 @@
-let topDiv = document.getElementById("data");
+let topDiv = document.getElementById("foundation");
 
 // fetch doesn't work with local files. must use Live Server
 fetch("test.json")
@@ -6,7 +6,6 @@ fetch("test.json")
   .then(json => printJson(json, topDiv));
 
 const printJson = (o, div) => {
-
   let keys = Object.keys(o);
 
   for (let i = 0; i < keys.length; i++) {
@@ -19,8 +18,8 @@ const printJson = (o, div) => {
     // }
 
     let newDiv;
-    if (typeof value == 'object') { newDiv = buildDivForObject(div, key); }
-    else { newDiv = buildDivForPrimitive(div, key, value); }
+    if (typeof value == 'object') { newDiv = buildDivObject(div, key); }
+    else { newDiv = buildDivPrimitive(div, key, value); }
     
     // recurses if value is an object
     typeof value == 'object' && printJson(value, newDiv); 
@@ -35,15 +34,29 @@ const isNumber = (key) => {
   return Number.parseInt(key) == derp; // if true, then it's not NaN, so it IS a number
 }
 
-const buildDivForObject = (parentDiv, key) => {
+const buildDivObject = (parentDiv, key) => {
   let newDiv = document.createElement("div");
-  newDiv.classList.add('keys-value-is-object')
+  newDiv.classList.add('property', 'key-object', 'expanded')
 
+  // EXPAND/COLLAPSE - create basic HTML elements
   let button = document.createElement("button")
-  button.classList.add("button-show-hide");
+  button.classList.add('button-expander');
   let i = document.createElement("i");
   i.classList.add("fas", "fa-minus")
   button.appendChild(i);
+
+  // EXPAND/COLLAPSE - add functionality
+  button.addEventListener('click', () => {
+    button.parentElement.querySelectorAll('.property').forEach((e) => {
+      // could do contains/replace if toggle gets buggy
+      e.classList.toggle('expanded');
+      e.classList.toggle('collapsed');
+    })
+    let iconClass = button.children.item(0).classList;
+    iconClass.toggle('fa-plus');
+    iconClass.toggle('fa-minus');
+  })
+
   newDiv.appendChild(button);
 
   let keyElement = document.createElement("label");
@@ -54,24 +67,29 @@ const buildDivForObject = (parentDiv, key) => {
   return newDiv;
 }
 
-const buildDivForPrimitive = (parentDiv, key, value) => {
+const buildDivPrimitive = (parentDiv, key, value) => {
+  console.log("buildDivPrimitive() " + key);
   let newDiv = document.createElement("div");
-  newDiv.classList.add('keys-value-is-primitive')
+  newDiv.classList.add('property', 'key-primitive')
 
   let keyElement = document.createElement("label");
   keyElement.innerHTML = key;
   newDiv.appendChild(keyElement);
 
-  let valueElement = document.createElement("input"); // value
-  valueElement.value = value; // value
-  newDiv.appendChild(valueElement); // value
+  let valueElement = document.createElement("input");
+  valueElement.value = value;
+  newDiv.appendChild(valueElement);
 
   parentDiv.appendChild(newDiv);
   return newDiv;
 }
 
 // excpand/colapse
+// jquery
 // http://jsfiddle.net/hungerpain/eK8X5/7/
+
+// CSS only
+// https://codepen.io/abergin/pen/ihlDf
 
 
 
