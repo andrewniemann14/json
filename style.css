@@ -1,0 +1,24 @@
+
+div div { 
+  transform: translateX(1em);
+}
+
+.button-show-hide {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+div label {
+  font-family: sans-serif;
+  font-weight: bold;
+}
+
+
+.keys-value-is-object {
+  /* expand/collapse */
+}
+
+.keys-value-is-primitive {
+  /* normal line */
+}

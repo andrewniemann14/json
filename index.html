@@ -5,43 +5,17 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>The JSONator</title>
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <div id="data" style="background-color: aqua;"></div>
-
-    <script>
-      let mainDiv = document.getElementById("data");
-
-      // when ready to actually upload and use a file:
-      // https://developer.mozilla.org/en-US/docs/Web/API/File/Using_files_from_web_applications
-
-      // fetch doesn't work with local files. must use Live Server
-      fetch("test.json")
-        .then(response => response.json())
-        .then(json => printJson(json));
-
-      const printJson = (o) => { // need to also pass in a div to allow nesting
-        let keys = Object.keys(o);
-        for (let i = 0; i < keys.length; i++) {
-          let key = keys[i];
-          let value = o[key];
-          // https://stackoverflow.com/questions/2652319/how-do-you-check-that-a-number-is-nan-in-javascript
-          let isNumber = Number.parseInt(key) // NaN is a number, but unique in its inequality to itself
-          if (Number.parseInt(key) === isNumber) { // if true, then it's not NaN, so it IS a number
-            printJson(value);
-            continue; // restart this iteration's for loop from here after recursion
-          }
-          let div = document.createElement("div");
-          if (typeof value == 'object') div.innerHTML = key;
-          else div.innerHTML = key + ": " + value; // should be separate elements for styling
-          mainDiv.appendChild(div);
-          typeof value == 'object' && printJson(value); // recurses if value is an object
-        }
-      }
+    <div id="data"></div>
 
 
-  </script>
+
+
+    <script src="https://kit.fontawesome.com/c52754ff7b.js" crossorigin="anonymous"></script>
+    <script src="build.js"></script>
+    <script src="interact.js"></script>
 </body>
 </html>
