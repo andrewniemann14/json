@@ -25,3 +25,11 @@ div label {
 .key-primitive {
   font-weight: normal;
 }
+
+.property {
+  background:lightgray; 
+}
+
+.key-array > label {
+  color: gray;
+}

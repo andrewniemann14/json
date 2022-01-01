@@ -1,9 +1,33 @@
 let topDiv = document.getElementById("foundation");
 
+document.getElementById("submitURL").addEventListener("click", () => {
+  let url = document.getElementById("urlInput").value;
+  loadJsonFromURL(url);
+})
+
+document.getElementById("submitFile").addEventListener("click", () => {
+  let file = document.getElementById("fileInput").files[0];
+  console.log(file);
+})
+
 // fetch doesn't work with local files. must use Live Server
-fetch("test.json")
+function loadJsonFromURL(url) {
+  topDiv.innerHTML = ''; // this keeps the div but removes all children
+  fetch(url)
   .then(response => response.json())
   .then(json => printJson(json, topDiv));
+}
+
+function loadJsonFromFile(file) {
+  
+
+
+  topDiv.innerHTML = ''; // this keeps the div but removes all children
+  fetch(file)
+  .then(response => response.json())
+  .then(json => printJson(json, topDiv));
+
+}
 
 const printJson = (o, div) => {
   let keys = Object.keys(o);
@@ -11,15 +35,18 @@ const printJson = (o, div) => {
   for (let i = 0; i < keys.length; i++) {
     let key = keys[i];
     let value = o[key];
+    let isArray = isNumber(key)
 
-    // if (isNumber(key)) {
-    //   printJson(value, div);
-    //   continue; // end for loop after recursion
+    // if (isArray) {
+      // don't print the index header for each object
+      // printJson(value, div);
+      // continue;
     // }
-
+    
     let newDiv;
-    if (typeof value == 'object') { newDiv = buildDivObject(div, key); }
-    else { newDiv = buildDivPrimitive(div, key, value); }
+    // could use custom elements here, though I don't see a benefit
+    if (typeof value == 'object') { newDiv = buildDivObject(div, key, isArray); }
+    else { newDiv = buildDivPrimitive(div, key, value, isArray); }
     
     // recurses if value is an object
     typeof value == 'object' && printJson(value, newDiv); 
@@ -28,15 +55,15 @@ const printJson = (o, div) => {
 
 
 // if key is number, than it is part of an array
-// https://stackoverflow.com/questions/2652319/how-do-you-check-that-a-number-is-nan-in-javascript
 const isNumber = (key) => {
   let derp = Number.parseInt(key) // NaN is a number, but unique in its inequality to itself
   return Number.parseInt(key) == derp; // if true, then it's not NaN, so it IS a number
 }
 
-const buildDivObject = (parentDiv, key) => {
+const buildDivObject = (parentDiv, key, isArray) => {
   let newDiv = document.createElement("div");
   newDiv.classList.add('property', 'key-object', 'expanded')
+  isArray && newDiv.classList.add('key-array');
 
   // EXPAND/COLLAPSE - create basic HTML elements
   let button = document.createElement("button")
@@ -67,8 +94,8 @@ const buildDivObject = (parentDiv, key) => {
   return newDiv;
 }
 
-const buildDivPrimitive = (parentDiv, key, value) => {
-  console.log("buildDivPrimitive() " + key);
+const buildDivPrimitive = (parentDiv, key, value, isArray) => {
+  isArray && console.log(key + 'isArray: true');
   let newDiv = document.createElement("div");
   newDiv.classList.add('property', 'key-primitive')
 
