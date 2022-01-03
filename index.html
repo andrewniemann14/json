@@ -9,27 +9,35 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <select id="">
-      <option value="">Upload file</option>
-      <option value="">Paste URL</option>
+    <div class="editing-mode__container">
+      <input type="checkbox" class="editing-mode__checkbox" onclick="handleCheckbox()">
+    </div>
+
+    <section class="input__section">
+      <select class="input__select">
+        <option class="input__select-option" value="">Upload file</option>
+        <option class="input__select-option" value="">Paste URL</option>
       </select>
-    <div>
-      <input type="file" id="fileInput" accept=".json" onchange="loadJsonFromFile(event)" multiple>
-      <button id="removeFile" style="color: red;">x</button>
-      <button id="submitFile" type="submit">Submit</button>
+      <div>
+        <input type="file" id="fileInput" accept=".json" multiple>
+        <button id="removeFile" style="color: red;">x</button>
+        <button id="submitFile" type="submit">Submit</button>
       </div>
-    <div>
-      <input type="text" id="urlInput">
-      <button id="submitURL" type="submit">Submit</button>
+      <div>
+        <input type="text" id="urlInput"> <!-- paste button would be nice -->
+        <button id="submitURL" type="submit">Submit</button>
       </div>
-
-
+    </section>
+    
+    
     <div id="foundation"></div>
-
-
-
-
+    
+    <button id="downloadJson">Download</button>
+    
+    
+    
     <script src="https://kit.fontawesome.com/c52754ff7b.js" crossorigin="anonymous"></script>
-    <script src="build.js"></script>
+    <script src="jsonator.js"></script>
+    <script src="index.js"></script>
   </body>
   </html>
