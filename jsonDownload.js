@@ -10,4 +10,14 @@ const downloadJson = () => {
 }
 
 let downloadButton = document.getElementById('downloadJson');
-downloadButton.addEventListener('click', downloadJson);
+downloadButton.addEventListener('click', download(json));
+
+const download = (json)
+const a = document.createElement("a");
+a.href = URL.createObjectURL(new Blob([JSON.stringify(json, null, 2)], {
+  type: "text/plain"
+}));
+a.setAttribute("download", "data.txt");
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
