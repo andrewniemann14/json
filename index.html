@@ -7,32 +7,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The JSONator</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/c52754ff7b.js" crossorigin="anonymous"></script>
   </head>
   <body>
-    <div class="editing-mode__container">
-      <input type="checkbox" class="editing-mode__checkbox" onclick="handleCheckbox()">
-    </div>
 
     <section class="input__section">
-      <select class="input__select">
-        <option class="input__select-option" value="">Upload file</option>
-        <option class="input__select-option" value="">Paste URL</option>
+
+      <select class="input__select" id="inputSelect">
+        <option class="input__select-option">Upload file</option>
+        <option class="input__select-option">Paste URL</option>
       </select>
-      <div>
+
+      <div class="input__form input__form--file input__show">
         <input type="file" id="fileInput" accept=".json" multiple>
-        <button id="removeFile" style="color: red;">x</button>
+        <!-- <button id="removeFile" style="color: red;">x</button> -->
         <button id="submitFile" type="submit">Submit</button>
       </div>
-      <div>
-        <input type="text" id="urlInput"> <!-- paste button would be nice -->
+
+      <div class="input__form input__form--url">
+        <button id="pasteURL"><i class=""></i></button>
+        <input type="text" id="urlInput">
         <button id="submitURL" type="submit">Submit</button>
       </div>
     </section>
     
+    <section class="toolbar__section">
+      <button class="toolbar__button" id="downloadJson"><i class="fas fa-download"></i></button>
+      <button class="toolbar__button" id="saveJson"><i class="fas fa-save"></i></button>
+      <button class="toolbar__button" id="editJson"><i class="fas fa-edit"></i></button>
+    </section>
     
+
     <div id="foundation"></div>
     
-    <button id="downloadJson">Download</button>
     
     
     

@@ -1,38 +1,28 @@
 let topDiv = document.getElementById("foundation");
-
-// HANDLER - submit URL
-document.getElementById("submitURL").addEventListener("click", () => {
-  let url = document.getElementById("urlInput").value;
-  loadJsonFromURL(url);
-})
+var json;
 
 // fetch doesn't work with local files. must use Live Server
-function loadJsonFromURL(url) {
+const loadJsonFromURL = (url) => {
   topDiv.innerHTML = ''; // this keeps the div but removes all children
   fetch(url)
   .then(response => response.json())
-  .then(json => {
+  .then(data => {
+    json = data;
     printJson(json, topDiv);
   })
 }
-
-// HANDLER - submit file
-document.getElementById("submitFile").addEventListener("click", function handleFile() {
-  let file = document.getElementById("fileInput").files[0];
-  loadJsonFromFile(file);
-})
 
 function loadJsonFromFile(file) {
   topDiv.innerHTML = ''; // this keeps the div but removes all children
   let reader = new FileReader();
   reader.onload = ((e) => {
-    let json = JSON.parse(e.target.result)
+    json = JSON.parse(e.target.result)
     printJson(json, topDiv);
   })
   reader.readAsText(file); // this triggers the 'onload'
 }
 
-// main function for displaying JSON
+// DISPLAY - MAIN FUNCTION
 const printJson = (o, div) => {
   let keys = Object.keys(o);
 
@@ -122,9 +112,27 @@ const buildDivPrimitive = (parentDiv, key, value, isArray) => {
 // https://stackoverflow.com/questions/34156282/how-do-i-save-json-to-local-text-file
 // solution for larger files: https://github.com/eligrey/FileSaver.js
 
-const downloadJson = () => {
+function downloadJson() {
   console.log("downloadJson()");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(json, null, 2)], {
+    type: "text/plain"
+  }));
+  a.setAttribute("download", "download.json");
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 
-let downloadButton = document.getElementById('downloadJson');
-downloadButton.addEventListener('click', downloadJson);
+
+// how to edit:
+
+// hmmmmm...
+
+
+//  1. Editing Mode makes everything input fields
+//  2. Save gets all values and builds an object
+//      using recursion like the print function
+//      (if there is a child div, recurse, passing current div as proprty somehow)
+//  3. working copy of 'json' variable is updated
+//  4. printJson(newVersion)

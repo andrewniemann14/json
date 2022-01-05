@@ -1,18 +1,12 @@
 
-.editing-mode__container {
-  height: 50px;
-  width: 50px;
+
+.input__form {
+  display: none;
 }
 
-.editing-mode__checkbox {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  cursor: pointer;
-  background: none;
-  border: none;
+.input__show {
+  display: block;
 }
-
 
 div div { 
   transform: translateX(1em);
@@ -46,4 +40,18 @@ div label {
 
 .key-array > label {
   color: gray;
+}
+
+.toolbar__button {
+  height: 4em;
+  width: 4em;
+  padding: .25em;
+  margin: .25em;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.toolbar__button i {
+  transform: scale(2);
 }
