@@ -19,7 +19,7 @@ document.getElementById("submitURL").addEventListener("click", () => {
 
 document.getElementById('downloadJson').addEventListener('click', downloadJson);
 
-// document.getElementById('saveJson').addEventListener('click', saveJson);
+document.getElementById('saveJson').addEventListener('click', saveJson);
 
 document.getElementById('editJson').addEventListener('click', () => {
   console.log("editing mode checkbox clicked");

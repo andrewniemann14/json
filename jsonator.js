@@ -22,6 +22,14 @@ function loadJsonFromFile(file) {
   reader.readAsText(file); // this triggers the 'onload'
 }
 
+
+
+
+
+
+
+
+
 // DISPLAY - MAIN FUNCTION
 const printJson = (o, div) => {
   let keys = Object.keys(o);
@@ -108,6 +116,42 @@ const buildDivPrimitive = (parentDiv, key, value, isArray) => {
 }
 
 
+
+
+
+
+// EDIT
+
+//  1. Editing Mode makes everything input fields
+//      "keys" are locked by default, make an unlock button
+//  2. Save gets all values and builds an object
+//  3. working copy of 'json' variable is updated
+//  4. printJson(newVersion)
+
+
+
+const saveJson = () => {
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // DOWNLOAD
 // https://stackoverflow.com/questions/34156282/how-do-i-save-json-to-local-text-file
 // solution for larger files: https://github.com/eligrey/FileSaver.js
@@ -123,16 +167,3 @@ function downloadJson() {
   a.click();
   document.body.removeChild(a);
 }
-
-
-// how to edit:
-
-// hmmmmm...
-
-
-//  1. Editing Mode makes everything input fields
-//  2. Save gets all values and builds an object
-//      using recursion like the print function
-//      (if there is a child div, recurse, passing current div as proprty somehow)
-//  3. working copy of 'json' variable is updated
-//  4. printJson(newVersion)

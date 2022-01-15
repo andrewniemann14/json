@@ -8,7 +8,7 @@
   display: block;
 }
 
-div div { 
+.property .property {
   transform: translateX(1em);
 }
 
@@ -55,3 +55,7 @@ div label {
 .toolbar__button i {
   transform: scale(2);
 }
+
+
+
+/* use ::before elements to make a visual indicator of the nesting of divs */

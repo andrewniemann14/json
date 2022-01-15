@@ -1,0 +1,15 @@
+
+Implementing the editing/saving functionality
+The most basic function is to save field changes. Adding to an array, etc. can come later. To solve the problem of turning HTML into JSON, I looked at the flow of the display method:
+1.	Get keys of object
+2.	Iterate thru keys
+  a.	Create newDiv
+  b.	Build HTML elements
+  c.	Make the HTML value equivalent to the key/value of the iteration
+  d.	If it’s an object, recurse into the next level before continuing iteration
+
+Now how to reverse the process to read HTML as an object?
+1.	Iterate thru divs, using class flags
+  a.	Get values of elements
+  b.	Build object
+  c.	If it has a subdiv, recurse
