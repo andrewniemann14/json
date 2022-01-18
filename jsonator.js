@@ -1,9 +1,8 @@
-let topDiv = document.getElementById("foundation");
 var json;
 
 // fetch doesn't work with local files. must use Live Server
 const loadJsonFromURL = (url) => {
-  topDiv.innerHTML = ''; // this keeps the div but removes all children
+  topDiv.innerHTML = ''; // should move/merge this somewhere
   fetch(url)
   .then(response => response.json())
   .then(data => {
@@ -13,7 +12,7 @@ const loadJsonFromURL = (url) => {
 }
 
 function loadJsonFromFile(file) {
-  topDiv.innerHTML = ''; // this keeps the div but removes all children
+  topDiv.innerHTML = ''; // should move/merge this somewhere
   let reader = new FileReader();
   reader.onload = ((e) => {
     json = JSON.parse(e.target.result)
@@ -37,7 +36,7 @@ const printJson = (o, div) => {
   for (let i = 0; i < keys.length; i++) {
     let key = keys[i];
     let value = o[key];
-    let isArray = isNumber(key)
+    let isArray = isNumber(key); // this is working
 
     // if (isArray) {
       // don't print the index header for each object
@@ -47,11 +46,12 @@ const printJson = (o, div) => {
     
     let newDiv;
     // could use custom elements here, though I don't see a benefit
-    if (typeof value == 'object') { newDiv = buildDivObject(div, key, isArray); }
+    if (typeof value == 'object') {
+      newDiv = buildDivObject(div, key, isArray);
+      printJson(value, newDiv); // recurse
+    }
     else { newDiv = buildDivPrimitive(div, key, value, isArray); }
     
-    // recurses if value is an object
-    typeof value == 'object' && printJson(value, newDiv); 
   } // end for loop
 }
 
@@ -65,8 +65,11 @@ const isNumber = (key) => {
 // includes expand/collapse, does not include property values
 const buildDivObject = (parentDiv, key, isArray) => {
   let newDiv = document.createElement("div");
-  newDiv.classList.add('property', 'key-object', 'expanded')
-  isArray && newDiv.classList.add('key-array');
+  newDiv.classList.add('property', 'object-complex', 'expanded')
+  if (isArray) {
+    parentDiv.classList.add('array');
+    newDiv.classList.add('array-element');
+  }
 
   // EXPAND/COLLAPSE - create basic HTML elements
   let button = document.createElement("button")
@@ -89,8 +92,9 @@ const buildDivObject = (parentDiv, key, isArray) => {
 
   newDiv.appendChild(button);
 
-  let keyElement = document.createElement("label");
-  keyElement.innerHTML = key;
+  let keyElement = document.createElement("input");
+  keyElement.classList.add('key');
+  keyElement.value = key;
   newDiv.appendChild(keyElement);
 
   parentDiv.appendChild(newDiv);
@@ -101,13 +105,15 @@ const buildDivObject = (parentDiv, key, isArray) => {
 const buildDivPrimitive = (parentDiv, key, value, isArray) => {
   isArray && console.log(key + 'isArray: true');
   let newDiv = document.createElement("div");
-  newDiv.classList.add('property', 'key-primitive')
+  newDiv.classList.add('property', 'object-simple')
 
-  let keyElement = document.createElement("label");
-  keyElement.innerHTML = key;
+  let keyElement = document.createElement("input");
+  keyElement.classList.add('key');
+  keyElement.value = key;
   newDiv.appendChild(keyElement);
 
   let valueElement = document.createElement("input");
+  valueElement.classList.add('value');
   valueElement.value = value;
   newDiv.appendChild(valueElement);
 
@@ -126,21 +132,54 @@ const buildDivPrimitive = (parentDiv, key, value, isArray) => {
 //      "keys" are locked by default, make an unlock button
 //  2. Save gets all values and builds an object
 //  3. working copy of 'json' variable is updated
-//  4. printJson(newVersion)
+//  4. printJson(newVersion) - probably unnecessary
 
 
-
-const saveJson = () => {
-
-
-
+const saveJsonOuter = (div, object) => {
+  saveJsonInner(div, object);
+  div.innerHTML = '';
+  printJson(object, div); // debugging version
+  // json = object; // live version
 }
 
+const saveJsonInner = (div, object) => {
+  console.log('div children length:', div.children.length);
+  for (let i = 0; i < div.children.length; i++) {
+    console.log("for loop starts");
+    let child = div.children.item(i);
+    console.log('child: ', child);
+
+    if (child.classList.contains('object-simple')) {
+      console.log("it's simple");
+      let key = child.querySelector('.key').value;
+      let value = child.querySelector('.value').value;
+      object[key] = value;
+    }
+    
+    else if (child.classList.contains('object-complex')) {
+      console.log("it's complex");
+      let keyInput = child.querySelector('.key'); // grabs the input field: good for values, bad for recursion
+      object[keyInput.value] = saveJsonInner(child, object);
 
 
+      // TODO:
+      if (child.classList.contains('object-array')) {
+        console.log("it's an array");
 
+        let nestedArray = child.querySelectorAll(':scope > .property'); // grabs the divs of the next object
+        console.log(nestedArray); // NodeList of 3
+        
+        for (let node of nestedArray) {
+          console.log(node);
+        }
 
+      }
 
+    }
+      
+  } // end for loop
+
+}
 
 
 
@@ -157,7 +196,6 @@ const saveJson = () => {
 // solution for larger files: https://github.com/eligrey/FileSaver.js
 
 function downloadJson() {
-  console.log("downloadJson()");
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([JSON.stringify(json, null, 2)], {
     type: "text/plain"
@@ -167,3 +205,6 @@ function downloadJson() {
   a.click();
   document.body.removeChild(a);
 }
+
+
+

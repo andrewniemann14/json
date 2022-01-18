@@ -1,5 +1,10 @@
+body {
+  margin: 0;
+  padding: 0;
+}
 
 
+/* INPUT */
 .input__form {
   display: none;
 }
@@ -8,40 +13,8 @@
   display: block;
 }
 
-.property .property {
-  transform: translateX(1em);
-}
 
-.button-expander {
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-div label {
-  font-family: sans-serif;
-}
-
-.collapsed {
-  display: none;
-}
-
-.key-object {
-  font-weight: bold;
-}
-
-.key-primitive {
-  font-weight: normal;
-}
-
-.property {
-  background:lightgray; 
-}
-
-.key-array > label {
-  color: gray;
-}
-
+/* TOOLBAR */
 .toolbar__button {
   height: 4em;
   width: 4em;
@@ -57,5 +30,54 @@ div label {
 }
 
 
+/* BODY */
+#foundation {
+  margin-left: 2em;
+}
 
-/* use ::before elements to make a visual indicator of the nesting of divs */
+.property > .property {
+  transform: translateX(3em);
+}
+
+.button-expander {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.collapsed {
+  display: none;
+}
+
+.object-complex {
+  font-weight: bold;
+  transform: translate(-2em);
+  margin-bottom: .5em;
+}
+
+.object-simple {
+  font-weight: normal;
+}
+
+.object-array {
+
+}
+
+.object-array-element {
+
+}
+
+.key {
+  font-family: sans-serif;
+  font-weight: bold;
+  background: lightgray;
+}
+
+.value {
+
+}
+
+
+
+
+/* use ::before elements to make a visual branching indicator */
