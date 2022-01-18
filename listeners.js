@@ -26,3 +26,8 @@ document.getElementById('saveJson').addEventListener('click', () => saveJsonOute
 document.getElementById('editJson').addEventListener('click', () => {
   console.log("editing mode checkbox clicked");
 })
+
+document.getElementById('refreshJson').addEventListener('click', () => {
+  topDiv.innerHTML = '';
+  printJson(json, topDiv);
+})

@@ -47,10 +47,10 @@ const printJson = (o, div) => {
     let newDiv;
     // could use custom elements here, though I don't see a benefit
     if (typeof value == 'object') {
-      newDiv = buildDivObject(div, key, isArray);
+      newDiv = buildDivComplex(div, key, isArray);
       printJson(value, newDiv); // recurse
     }
-    else { newDiv = buildDivPrimitive(div, key, value, isArray); }
+    else { newDiv = buildDivSimple(div, key, value, isArray); }
     
   } // end for loop
 }
@@ -63,7 +63,7 @@ const isNumber = (key) => {
 }
 
 // includes expand/collapse, does not include property values
-const buildDivObject = (parentDiv, key, isArray) => {
+const buildDivComplex = (parentDiv, key, isArray) => {
   let newDiv = document.createElement("div");
   newDiv.classList.add('property', 'object-complex', 'expanded')
   if (isArray) {
@@ -102,8 +102,7 @@ const buildDivObject = (parentDiv, key, isArray) => {
 }
 
 // includes property key and value
-const buildDivPrimitive = (parentDiv, key, value, isArray) => {
-  isArray && console.log(key + 'isArray: true');
+const buildDivSimple = (parentDiv, key, value, isArray) => {
   let newDiv = document.createElement("div");
   newDiv.classList.add('property', 'object-simple')
 
@@ -143,45 +142,59 @@ const saveJsonOuter = (div, object) => {
 }
 
 const saveJsonInner = (div, object) => {
-  console.log('div children length:', div.children.length);
-  for (let i = 0; i < div.children.length; i++) {
-    console.log("for loop starts");
-    let child = div.children.item(i);
-    console.log('child: ', child);
+  let children = div.querySelectorAll(':scope > .property')
+  console.log('div children length:', children.length);
+  
+  // change to forEach(), or is that less compat?
+  for (let i = 0; i < children.length; i++) {
+    console.log("for loop starts on:");
+    let child = children.item(i);
+    console.log(child);
 
-    if (child.classList.contains('object-simple')) {
-      console.log("it's simple");
-      let key = child.querySelector('.key').value;
-      let value = child.querySelector('.value').value;
-      object[key] = value;
-    }
-    
-    else if (child.classList.contains('object-complex')) {
-      console.log("it's complex");
-      let keyInput = child.querySelector('.key'); // grabs the input field: good for values, bad for recursion
-      object[keyInput.value] = saveJsonInner(child, object);
-
-
-      // TODO:
-      if (child.classList.contains('object-array')) {
-        console.log("it's an array");
-
-        let nestedArray = child.querySelectorAll(':scope > .property'); // grabs the divs of the next object
-        console.log(nestedArray); // NodeList of 3
-        
-        for (let node of nestedArray) {
-          console.log(node);
-        }
-
+    // TODO: currently de-arraying the objects, hardcoding indeces as the new keys
+    if (child.classList.contains('array')) {
+      let nestedArray = child.querySelectorAll(':scope > .property'); // grabs the divs of the next object
+      for (let node of nestedArray) {
+        saveJsonInner(node, object);
+        continue;
       }
 
     }
-      
-  } // end for loop
 
+    if (child.classList.contains('object-simple')) {
+      // doesn't work if I put the function's code block here.
+      // why? something to do with the return/continue flow?
+      readDivSimple(child, object);
+      continue;
+    }
+    
+    else if (child.classList.contains('object-complex')) {
+      let key = child.querySelector('.key').value; // grabs the input field
+      let newObject = new Object();
+      object[key] = saveJsonInner(child, newObject);
+
+
+    }
+    
+  } // end for loop
+  
+  return object;
 }
 
+const readDivSimple = (div, object) => {
+  let key = div.querySelector('.key').value;
+  let value = div.querySelector('.value').value;
+  object[key] = value;
+  return object;
+}
 
+// const readDivComplex = (div) => {
+//   let newObject = new Object();
+//   let children = div.querySelectorAll(':scope > .property');
+//   for (let i = 0; i < children.length; i++) {
+
+//   }
+// }
 
 
 
