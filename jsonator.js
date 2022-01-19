@@ -1,4 +1,9 @@
+// should probably use custom elements so i don't have classList manipulation all over the place
+// especially if i use a css framework
+
+// this is the working copy of the json object
 var json;
+
 
 // fetch doesn't work with local files. must use Live Server
 const loadJsonFromURL = (url) => {
@@ -33,37 +38,41 @@ function loadJsonFromFile(file) {
 const printJson = (object, div) => {
   let newDiv;
 
+  // if array, build empty .array div and continue recursing
   if (object.constructor.name === "Array") {
     console.log('caught ', object, ' as an array');
-    newDiv = buildDivArray(div);
+    let arrayDiv = buildDivArray(div);
     for (let i = 0; i < object.length; i++) {
-      console.log(object[i]);
-      newDiv = printJson(object[i], newDiv);
+      newDiv = printJson(object[i], arrayDiv);
     }
 
-    // TODO: left off here
-    // arrayofstrings.json: strings are split into letter arrays,
-    // arrayofobjects.json: objects are nested in divs instead of siblings
+  // if not array, continue
   } else {
-    let keys = Object.keys(object);
-    console.log(keys); // 0, repeating infinitely
 
-    for (let i = 0; i < keys.length; i++) {
-      let key = keys[i];
-      console.log(key);
-      let value = object[key];
-      console.log(value);
-      
+    // if it's a key-value pair, 
+    if (typeof object == 'object') {
+      let keys = Object.keys(object);
+      console.log(keys);
 
-      // could use custom elements here
-      if (typeof value == 'object') {
-        console.log(value, ' is object');
-        newDiv = buildDivComplex(div, key);
-        printJson(value, newDiv); // recurse
-      }
-      else { newDiv = buildDivSimple(div, key, value); }
-    } // end for loop
+      for (let i = 0; i < keys.length; i++) {
+        let key = keys[i];
+        let value = object[key];
+
+        if (typeof value == 'object') {
+          console.log(value, ' is object');
+          newDiv = buildDivComplex(div, key);
+          printJson(value, newDiv); // recurse
+        }
+        else { newDiv = buildDivSimple(div, key, value); }
+      } // end for loop
+    }
+    
+    // if primitive, just add to the parentDiv
+    else {
+      buildDivPrimitive(div, object)
+    }
   }
+
   return newDiv;
 }
 
@@ -126,14 +135,20 @@ const buildDivArray = (parentDiv) => {
   let newDiv = document.createElement("div");
   newDiv.classList.add('property', 'array');
 
-  // let keyElement = document.createElement("input");
-  // keyElement.classList.add('key');
-  // keyElement.value = key;
-  // newDiv.appendChild(keyElement);
-  // console.log('buildDivArray > newDiv > ', newDiv);
-  // console.log(key);
   parentDiv.appendChild(newDiv);
   return newDiv;
+}
+
+const buildDivPrimitive = (parentDiv, object) => {
+  let newDiv = document.createElement("div");
+  newDiv.classList.add('property', 'object-primitive');
+
+  let valueElement = document.createElement("input");
+  valueElement.classList.add('value');
+  valueElement.value = object;
+
+  newDiv.appendChild(valueElement);
+  parentDiv.appendChild(newDiv);
 }
 
 
@@ -156,11 +171,10 @@ const saveJsonOuter = (div, object) => {
   // json = object; // live version
 }
 
+// TODO: everything is probably broken now, after building array divs works
 const saveJsonInner = (div, object) => {
   
 
-  // TODO: currently de-arraying the objects, hardcoding indeces as the new keys
-  // TODO: once arrays are working, need to handle if the overall file is array
   if (div.classList.contains('array')) {
     let arrayNodes = child.querySelectorAll(':scope > .property'); // grabs the divs of the next object
     let array = new Array();
