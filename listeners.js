@@ -30,4 +30,5 @@ document.getElementById('editJson').addEventListener('click', () => {
 document.getElementById('refreshJson').addEventListener('click', () => {
   topDiv.innerHTML = '';
   printJson(json, topDiv);
+  console.log(json);
 })

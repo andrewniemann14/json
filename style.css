@@ -59,12 +59,12 @@ body {
   font-weight: normal;
 }
 
-.object-array {
-
+.array {
+  color: aqua;
 }
 
-.object-array-element {
-
+.array-element {
+  color: aquamarine;
 }
 
 .key {

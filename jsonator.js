@@ -30,46 +30,48 @@ function loadJsonFromFile(file) {
 
 
 // DISPLAY - MAIN FUNCTION
-const printJson = (o, div) => {
-  let keys = Object.keys(o);
+const printJson = (object, div) => {
+  let newDiv;
 
-  for (let i = 0; i < keys.length; i++) {
-    let key = keys[i];
-    let value = o[key];
-    let isArray = isNumber(key); // this is working
-
-    // if (isArray) {
-      // don't print the index header for each object
-      // printJson(value, div);
-      // continue;
-    // }
-    
-    let newDiv;
-    // could use custom elements here, though I don't see a benefit
-    if (typeof value == 'object') {
-      newDiv = buildDivComplex(div, key, isArray);
-      printJson(value, newDiv); // recurse
+  if (object.constructor.name === "Array") {
+    console.log('caught ', object, ' as an array');
+    newDiv = buildDivArray(div);
+    for (let i = 0; i < object.length; i++) {
+      console.log(object[i]);
+      newDiv = printJson(object[i], newDiv);
     }
-    else { newDiv = buildDivSimple(div, key, value, isArray); }
-    
-  } // end for loop
+
+    // TODO: left off here
+    // arrayofstrings.json: strings are split into letter arrays,
+    // arrayofobjects.json: objects are nested in divs instead of siblings
+  } else {
+    let keys = Object.keys(object);
+    console.log(keys); // 0, repeating infinitely
+
+    for (let i = 0; i < keys.length; i++) {
+      let key = keys[i];
+      console.log(key);
+      let value = object[key];
+      console.log(value);
+      
+
+      // could use custom elements here
+      if (typeof value == 'object') {
+        console.log(value, ' is object');
+        newDiv = buildDivComplex(div, key);
+        printJson(value, newDiv); // recurse
+      }
+      else { newDiv = buildDivSimple(div, key, value); }
+    } // end for loop
+  }
+  return newDiv;
 }
 
-
-// if key is number, than it is part of an array
-const isNumber = (key) => {
-  let derp = Number.parseInt(key) // NaN is a number, but unique in its inequality to itself
-  return Number.parseInt(key) == derp; // if true, then it's not NaN, so it IS a number
-}
 
 // includes expand/collapse, does not include property values
-const buildDivComplex = (parentDiv, key, isArray) => {
+const buildDivComplex = (parentDiv, key) => {
   let newDiv = document.createElement("div");
   newDiv.classList.add('property', 'object-complex', 'expanded')
-  if (isArray) {
-    parentDiv.classList.add('array');
-    newDiv.classList.add('array-element');
-  }
 
   // EXPAND/COLLAPSE - create basic HTML elements
   let button = document.createElement("button")
@@ -102,7 +104,7 @@ const buildDivComplex = (parentDiv, key, isArray) => {
 }
 
 // includes property key and value
-const buildDivSimple = (parentDiv, key, value, isArray) => {
+const buildDivSimple = (parentDiv, key, value) => {
   let newDiv = document.createElement("div");
   newDiv.classList.add('property', 'object-simple')
 
@@ -120,6 +122,19 @@ const buildDivSimple = (parentDiv, key, value, isArray) => {
   return newDiv;
 }
 
+const buildDivArray = (parentDiv) => {
+  let newDiv = document.createElement("div");
+  newDiv.classList.add('property', 'array');
+
+  // let keyElement = document.createElement("input");
+  // keyElement.classList.add('key');
+  // keyElement.value = key;
+  // newDiv.appendChild(keyElement);
+  // console.log('buildDivArray > newDiv > ', newDiv);
+  // console.log(key);
+  parentDiv.appendChild(newDiv);
+  return newDiv;
+}
 
 
 
@@ -142,38 +157,35 @@ const saveJsonOuter = (div, object) => {
 }
 
 const saveJsonInner = (div, object) => {
-  let children = div.querySelectorAll(':scope > .property')
-  console.log('div children length:', children.length);
   
+
+  // TODO: currently de-arraying the objects, hardcoding indeces as the new keys
+  // TODO: once arrays are working, need to handle if the overall file is array
+  if (div.classList.contains('array')) {
+    let arrayNodes = child.querySelectorAll(':scope > .property'); // grabs the divs of the next object
+    let array = new Array();
+    for (let node of arrayNodes) {
+      array.push(saveJsonInner(node, object));
+    }
+    return array;
+  }
+  
+  let children = div.querySelectorAll(':scope > .property');
+
   // change to forEach(), or is that less compat?
   for (let i = 0; i < children.length; i++) {
-    console.log("for loop starts on:");
     let child = children.item(i);
-    console.log(child);
+   
 
-    // TODO: currently de-arraying the objects, hardcoding indeces as the new keys
-    if (child.classList.contains('array')) {
-      let nestedArray = child.querySelectorAll(':scope > .property'); // grabs the divs of the next object
-      for (let node of nestedArray) {
-        saveJsonInner(node, object);
-        continue;
-      }
-
-    }
 
     if (child.classList.contains('object-simple')) {
-      // doesn't work if I put the function's code block here.
-      // why? something to do with the return/continue flow?
       readDivSimple(child, object);
-      continue;
+      // continue;
     }
     
     else if (child.classList.contains('object-complex')) {
-      let key = child.querySelector('.key').value; // grabs the input field
-      let newObject = new Object();
-      object[key] = saveJsonInner(child, newObject);
-
-
+      readDivComplex(child, object);
+      // continue;
     }
     
   } // end for loop
@@ -181,22 +193,34 @@ const saveJsonInner = (div, object) => {
   return object;
 }
 
+
 const readDivSimple = (div, object) => {
+  console.log(div);
+
+  if (div.classList.contains('array')) {
+    let array = new Array();
+    array.push(saveJsonInner(div, object));
+    return array;
+  }
+
   let key = div.querySelector('.key').value;
   let value = div.querySelector('.value').value;
   object[key] = value;
   return object;
 }
 
-// const readDivComplex = (div) => {
-//   let newObject = new Object();
-//   let children = div.querySelectorAll(':scope > .property');
-//   for (let i = 0; i < children.length; i++) {
+const readDivComplex = (div, object) => {
 
-//   }
-// }
-
-
+  if (div.classList.contains('array')) {
+    let array = new Array();
+    array.push(saveJsonInner(div, object));
+    return array;
+  }
+  
+  let key = div.querySelector('.key').value;
+  let newObject = new Object();
+  object[key] = saveJsonInner(div, newObject);
+}
 
 
 
