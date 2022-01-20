@@ -32,7 +32,7 @@ function loadJsonFromFile(file) {
 
 
 
-
+// TODO: work on simplearraytest.json, get the 'key3' div to be .object-simple
 
 // DISPLAY - MAIN FUNCTION
 const printJson = (object, div) => {
@@ -160,94 +160,68 @@ const buildDivPrimitive = (parentDiv, object) => {
 
 // EDIT
 
-//  1. Editing Mode makes everything input fields
-//      "keys" are locked by default, make an unlock button
+//  Editing Mode unlock input fields, maybe additional level of lock for keys?
 
 
 const saveJsonOuter = (div, object) => {
-  saveJsonInner(div, object);
+  json = saveJsonInner(div, object);
   div.innerHTML = '';
-  // json = object; // live version
-  printJson(object, div); // debugging version
+  printJson(json, div); // debugging version
 }
 
-// 1. take a div, like #foundation
-// 2. look for all sub-divs, like .array
-// 3. iterate through each subdiv (but only once in our example)
-// 4. find the .array
-// TODO: keep walking through. console logs look good now, but values still aren't getting saved
 
-
+// TODO: not working with key-less primitives - this is actually a problem with how the divs are build up top ( see simplearraytest.json's div structure )
 const saveJsonInner = (div, object) => {
-  console.log('div:', div); // 1.
   let children = div.querySelectorAll(':scope > .property');
-  console.log('children: ', children); // 2.
 
   for (let child of children) {
-    console.log('child:', child); // 3.
-
-    if (child.classList.contains('array')) { // 4.
-      let array = new Array();
-      array.push(saveJsonInner(child, object));
-      // let arrayNodes = child.querySelectorAll(':scope > .property');
-      // for (let node of arrayNodes) {
-        // console.log('node:', node);
-        // array.push(saveJsonInner(node, object));
-      // }
-      // console.log(array);
-      return array;
-    }
-
-    else {
-
-      if (child.classList.contains('object-simple')) {
-        readDivSimple(child, object);
-        // continue;
-      }
-      
-      else if (child.classList.contains('object-complex')) {
-        readDivComplex(child, object);
-        // continue;
-      }
-    }
-  } // end for loop
-    
+    readChild(child, object);
+  }
   return object;
 }
 
+const readChild = (div, object) => {
 
+  if (div.classList.contains('array')) {
+    readDivArray(div, object);
+  }
+
+  else if (div.classList.contains('object-simple')) {
+    readDivSimple(div, object); // gets key+value from 'child', modifies 'object'
+  }
+
+  else if (div.classList.contains('object-complex')) {
+    readDivComplex(div, object); // creates and returns new object, which is passed in recursion on 'div'
+  }
+  return object;
+}
+
+// TODO: 1. breaking element into object where index = key
+// TODO: 2. forcing all array elements to the value of the last element
+const readDivArray = (div, object) => {
+  let children = div.querySelectorAll(':scope > .property');
+  let array = new Array();
+  let newObject = new Object();
+  for (let child of children) {
+    array.push(readChild(child, newObject));
+  }
+  Object.assign(object, array);
+  return object;
+}
 
 const readDivSimple = (div, object) => {
-  console.log(div);
-
-  // if (div.classList.contains('array')) {
-  //   let array = new Array();
-  //   array.push(saveJsonInner(div, object));
-  //   return array;
-  // }
-
   let key = div.querySelector('.key').value;
   let value = div.querySelector('.value').value;
   object[key] = value;
-  return object;
 }
 
 const readDivComplex = (div, object) => {
-
-  // if (div.classList.contains('array')) {
-  //   let array = new Array();
-  //   array.push(saveJsonInner(div, object));
-  //   return array;
-  // }
-  
   let key = div.querySelector('.key').value;
   let newObject = new Object();
   object[key] = saveJsonInner(div, newObject);
 }
 
-const readDivArray = (div, object) => {
 
-}
 
 
 
