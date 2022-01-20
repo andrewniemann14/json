@@ -32,51 +32,62 @@ function loadJsonFromFile(file) {
 
 
 
-// TODO: work on simplearraytest.json, get the 'key3' div to be .object-simple
 
 // DISPLAY - MAIN FUNCTION
 const printJson = (object, div) => {
   let newDiv;
 
   if (object.constructor.name === "Array") {
-    let arrayDiv = buildDivArray(div); // returns a <div.array>, added to 'div'
+    let arrayDiv = buildDivArray(div); // no key, just a container
     for (let i = 0; i < object.length; i++) {
       newDiv = printJson(object[i], arrayDiv);
     }
 
-  // if not array, continue
   } else {
-
-    // if it's a key-value pair
-    if (typeof object == 'object') {
-      let keys = Object.keys(object);
-
-      for (let i = 0; i < keys.length; i++) {
-        let key = keys[i];
-        let value = object[key];
-
-        if (typeof value == 'object') {
-          newDiv = buildDivComplex(div, key); // returns <div.object-complex>, added to 'div'
-          printJson(value, newDiv); // recurse
-        }
-        else {
-          newDiv = buildDivSimple(div, key, value); // returns <div.object-simple>, added to 'div'
-        }
-      }
-    }
-    
-    else {
-      buildDivPrimitive(div, object) // returns null, adds <div.object-primitive> to 'div'
-    }
+    buildDiv(div, object)
   }
 
   return newDiv;
 }
 
+const buildDiv = (div, object) => {
+  let newDiv;
 
-const buildDivArray = (parentDiv) => {
+  if (typeof object == 'object') {
+    let keys = Object.keys(object);
+
+    for (let i = 0; i < keys.length; i++) {
+      let key = keys[i];
+      let value = object[key];
+
+      // currently, key1 = [value1, value2, value3] is being called complex
+      // might need to be corrected later, but works fine for now
+      if (typeof value == 'object') {
+        newDiv = buildDivComplex(div, key); // returns <div.object-complex> with <input.key>
+        printJson(value, newDiv); // recurses
+      }
+      else {
+        newDiv = buildDivSimple(div, key, value); // returns <div.object-simple> with <input.key>, <input.value>
+      }
+    }
+  }
+  
+  else {
+    buildDivPrimitive(div, object) // returns null, adds <div.object-primitive> to 'div'
+  }
+}
+
+// arguments doesn't work with arrow funcitons
+function buildDivArray(parentDiv, key) {
   let newDiv = document.createElement("div");
   newDiv.classList.add('property', 'array');
+
+  if (arguments.length == 2) {
+    let keyElement = document.createElement("input");
+    keyElement.classList.add('key');
+    keyElement.value = key;
+    newDiv.appendChild(keyElement);
+  }
 
   parentDiv.appendChild(newDiv);
   return newDiv;
@@ -136,7 +147,8 @@ const buildDivSimple = (parentDiv, key, value) => {
   return newDiv;
 }
 
-
+// could switch to just building an <input.value>, without the <div.object-primitive> container
+// whatever is easier for the editing side of things
 const buildDivPrimitive = (parentDiv, object) => {
   let newDiv = document.createElement("div");
   newDiv.classList.add('property', 'object-primitive');
@@ -180,6 +192,7 @@ const saveJsonInner = (div, object) => {
   return object;
 }
 
+
 const readChild = (div, object) => {
 
   if (div.classList.contains('array')) {
@@ -195,6 +208,7 @@ const readChild = (div, object) => {
   }
   return object;
 }
+
 
 // TODO: 1. breaking element into object where index = key
 // TODO: 2. forcing all array elements to the value of the last element
