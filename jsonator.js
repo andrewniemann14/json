@@ -2,7 +2,7 @@
 // especially if i use a css framework
 
 // this is the working copy of the json object
-var json;
+let json;
 
 
 // fetch doesn't work with local files. must use Live Server
@@ -38,10 +38,8 @@ function loadJsonFromFile(file) {
 const printJson = (object, div) => {
   let newDiv;
 
-  // if array, build empty .array div and continue recursing
   if (object.constructor.name === "Array") {
-    console.log('caught ', object, ' as an array');
-    let arrayDiv = buildDivArray(div);
+    let arrayDiv = buildDivArray(div); // returns a <div.array>, added to 'div'
     for (let i = 0; i < object.length; i++) {
       newDiv = printJson(object[i], arrayDiv);
     }
@@ -49,27 +47,26 @@ const printJson = (object, div) => {
   // if not array, continue
   } else {
 
-    // if it's a key-value pair, 
+    // if it's a key-value pair
     if (typeof object == 'object') {
       let keys = Object.keys(object);
-      console.log(keys);
 
       for (let i = 0; i < keys.length; i++) {
         let key = keys[i];
         let value = object[key];
 
         if (typeof value == 'object') {
-          console.log(value, ' is object');
-          newDiv = buildDivComplex(div, key);
+          newDiv = buildDivComplex(div, key); // returns <div.object-complex>, added to 'div'
           printJson(value, newDiv); // recurse
         }
-        else { newDiv = buildDivSimple(div, key, value); }
-      } // end for loop
+        else {
+          newDiv = buildDivSimple(div, key, value); // returns <div.object-simple>, added to 'div'
+        }
+      }
     }
     
-    // if primitive, just add to the parentDiv
     else {
-      buildDivPrimitive(div, object)
+      buildDivPrimitive(div, object) // returns null, adds <div.object-primitive> to 'div'
     }
   }
 
@@ -77,7 +74,15 @@ const printJson = (object, div) => {
 }
 
 
-// includes expand/collapse, does not include property values
+const buildDivArray = (parentDiv) => {
+  let newDiv = document.createElement("div");
+  newDiv.classList.add('property', 'array');
+
+  parentDiv.appendChild(newDiv);
+  return newDiv;
+}
+
+
 const buildDivComplex = (parentDiv, key) => {
   let newDiv = document.createElement("div");
   newDiv.classList.add('property', 'object-complex', 'expanded')
@@ -112,7 +117,7 @@ const buildDivComplex = (parentDiv, key) => {
   return newDiv;
 }
 
-// includes property key and value
+
 const buildDivSimple = (parentDiv, key, value) => {
   let newDiv = document.createElement("div");
   newDiv.classList.add('property', 'object-simple')
@@ -131,13 +136,6 @@ const buildDivSimple = (parentDiv, key, value) => {
   return newDiv;
 }
 
-const buildDivArray = (parentDiv) => {
-  let newDiv = document.createElement("div");
-  newDiv.classList.add('property', 'array');
-
-  parentDiv.appendChild(newDiv);
-  return newDiv;
-}
 
 const buildDivPrimitive = (parentDiv, object) => {
   let newDiv = document.createElement("div");
@@ -155,67 +153,78 @@ const buildDivPrimitive = (parentDiv, object) => {
 
 
 
+
+
+
+
+
 // EDIT
 
 //  1. Editing Mode makes everything input fields
 //      "keys" are locked by default, make an unlock button
-//  2. Save gets all values and builds an object
-//  3. working copy of 'json' variable is updated
-//  4. printJson(newVersion) - probably unnecessary
 
 
 const saveJsonOuter = (div, object) => {
   saveJsonInner(div, object);
   div.innerHTML = '';
-  printJson(object, div); // debugging version
   // json = object; // live version
+  printJson(object, div); // debugging version
 }
 
-// TODO: everything is probably broken now, after building array divs works
+// 1. take a div, like #foundation
+// 2. look for all sub-divs, like .array
+// 3. iterate through each subdiv (but only once in our example)
+// 4. find the .array
+// TODO: keep walking through. console logs look good now, but values still aren't getting saved
+
+
 const saveJsonInner = (div, object) => {
-  
-
-  if (div.classList.contains('array')) {
-    let arrayNodes = child.querySelectorAll(':scope > .property'); // grabs the divs of the next object
-    let array = new Array();
-    for (let node of arrayNodes) {
-      array.push(saveJsonInner(node, object));
-    }
-    return array;
-  }
-  
+  console.log('div:', div); // 1.
   let children = div.querySelectorAll(':scope > .property');
+  console.log('children: ', children); // 2.
 
-  // change to forEach(), or is that less compat?
-  for (let i = 0; i < children.length; i++) {
-    let child = children.item(i);
-   
+  for (let child of children) {
+    console.log('child:', child); // 3.
 
-
-    if (child.classList.contains('object-simple')) {
-      readDivSimple(child, object);
-      // continue;
+    if (child.classList.contains('array')) { // 4.
+      let array = new Array();
+      array.push(saveJsonInner(child, object));
+      // let arrayNodes = child.querySelectorAll(':scope > .property');
+      // for (let node of arrayNodes) {
+        // console.log('node:', node);
+        // array.push(saveJsonInner(node, object));
+      // }
+      // console.log(array);
+      return array;
     }
-    
-    else if (child.classList.contains('object-complex')) {
-      readDivComplex(child, object);
-      // continue;
+
+    else {
+
+      if (child.classList.contains('object-simple')) {
+        readDivSimple(child, object);
+        // continue;
+      }
+      
+      else if (child.classList.contains('object-complex')) {
+        readDivComplex(child, object);
+        // continue;
+      }
     }
-    
   } // end for loop
-  
+    
   return object;
 }
+
 
 
 const readDivSimple = (div, object) => {
   console.log(div);
 
-  if (div.classList.contains('array')) {
-    let array = new Array();
-    array.push(saveJsonInner(div, object));
-    return array;
-  }
+  // if (div.classList.contains('array')) {
+  //   let array = new Array();
+  //   array.push(saveJsonInner(div, object));
+  //   return array;
+  // }
 
   let key = div.querySelector('.key').value;
   let value = div.querySelector('.value').value;
@@ -225,18 +234,20 @@ const readDivSimple = (div, object) => {
 
 const readDivComplex = (div, object) => {
 
-  if (div.classList.contains('array')) {
-    let array = new Array();
-    array.push(saveJsonInner(div, object));
-    return array;
-  }
+  // if (div.classList.contains('array')) {
+  //   let array = new Array();
+  //   array.push(saveJsonInner(div, object));
+  //   return array;
+  // }
   
   let key = div.querySelector('.key').value;
   let newObject = new Object();
   object[key] = saveJsonInner(div, newObject);
 }
 
+const readDivArray = (div, object) => {
 
+}
 
 
 
@@ -256,6 +267,4 @@ function downloadJson() {
   a.click();
   document.body.removeChild(a);
 }
-
-
 
