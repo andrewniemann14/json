@@ -174,7 +174,6 @@ const buildDivPrimitive = (parentDiv, object) => {
 
 //  Editing Mode unlock input fields, maybe additional level of lock for keys?
 
-
 const saveJsonOuter = (div, object) => {
   json = saveJsonInner(div, object);
   div.innerHTML = '';
@@ -182,57 +181,60 @@ const saveJsonOuter = (div, object) => {
 }
 
 
-// TODO: not working with key-less primitives - this is actually a problem with how the divs are build up top ( see simplearraytest.json's div structure )
 const saveJsonInner = (div, object) => {
   let children = div.querySelectorAll(':scope > .property');
 
   for (let child of children) {
-    readChild(child, object);
+    object = readChild(child, object); // returning good array
   }
+  
   return object;
 }
 
 
-const readChild = (div, object) => {
+const readChild = (div, object) => { // should i create new working object to change/return?
 
   if (div.classList.contains('array')) {
-    readDivArray(div, object);
+    return readDivArray(div, object);
   }
 
   else if (div.classList.contains('object-simple')) {
-    readDivSimple(div, object); // gets key+value from 'child', modifies 'object'
+    return readDivSimple(div, object); // gets key+value from 'child', returns and modifies 'object'
   }
 
   else if (div.classList.contains('object-complex')) {
-    readDivComplex(div, object); // creates and returns new object, which is passed in recursion on 'div'
+    return readDivComplex(div, object); // creates and returns new object, which is passed in recursion on 'div'
   }
-  return object;
+
 }
 
 
-// TODO: 1. breaking element into object where index = key
-// TODO: 2. forcing all array elements to the value of the last element
-const readDivArray = (div, object) => {
-  let children = div.querySelectorAll(':scope > .property');
+const readDivArray = (arrayDiv, object) => {
+  let children = arrayDiv.querySelectorAll(':scope > .property');
   let array = new Array();
-  let newObject = new Object();
-  for (let child of children) {
-    array.push(readChild(child, newObject));
-  }
-  Object.assign(object, array);
+
+  children.forEach((child) => {
+    let e = new Object();
+    array.push(readChild(child, e));
+  })
+
+  return array;
+}
+
+const readDivSimple = (simpleDiv, object) => {
+  let key = simpleDiv.querySelector('.key').value;
+  let value = simpleDiv.querySelector('.value').value;
+  object[key] = value;
+
   return object;
 }
 
-const readDivSimple = (div, object) => {
-  let key = div.querySelector('.key').value;
-  let value = div.querySelector('.value').value;
-  object[key] = value;
-}
-
-const readDivComplex = (div, object) => {
-  let key = div.querySelector('.key').value;
+const readDivComplex = (complexDiv, object) => {
+  let key = complexDiv.querySelector('.key').value;
   let newObject = new Object();
-  object[key] = saveJsonInner(div, newObject);
+  object[key] = saveJsonInner(complexDiv, newObject);
+
+  return object;
 }
 
 
