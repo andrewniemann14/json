@@ -1,11 +1,11 @@
 // should probably use custom elements so i don't have classList manipulation all over the place
 // especially if i use a css framework
 
-// this is the working copy of the json object
+
 let json;
 
 
-// fetch doesn't work with local files. must use Live Server
+// fetch doesn't work with local files, need to use Live Server
 const loadJsonFromURL = (url) => {
   topDiv.innerHTML = ''; // should move/merge this somewhere
   fetch(url)
@@ -62,9 +62,10 @@ const buildDiv = (div, object) => {
 
       // currently, key1 = [value1, value2, value3] is being called complex
       // might need to be corrected later, but works fine for now
+      // because .array is checked before .complex
       if (typeof value == 'object') {
         newDiv = buildDivComplex(div, key); // returns <div.object-complex> with <input.key>
-        printJson(value, newDiv); // recurses
+        printJson(value, newDiv);
       }
       else {
         newDiv = buildDivSimple(div, key, value); // returns <div.object-simple> with <input.key>, <input.value>
@@ -147,8 +148,7 @@ const buildDivSimple = (parentDiv, key, value) => {
   return newDiv;
 }
 
-// could switch to just building an <input.value>, without the <div.object-primitive> container
-// whatever is easier for the editing side of things
+
 const buildDivPrimitive = (parentDiv, object) => {
   let newDiv = document.createElement("div");
   newDiv.classList.add('property', 'object-primitive');
@@ -164,16 +164,10 @@ const buildDivPrimitive = (parentDiv, object) => {
 
 
 
-
-
-
-
+//  Editing Mode unlock input fields, maybe additional level of lock for keys?
 
 
 // EDIT
-
-//  Editing Mode unlock input fields, maybe additional level of lock for keys?
-
 const saveJsonOuter = (div, object) => {
   json = saveJsonInner(div, object);
   div.innerHTML = '';
@@ -182,12 +176,13 @@ const saveJsonOuter = (div, object) => {
 
 
 const saveJsonInner = (div, object) => {
-  let children = div.querySelectorAll(':scope > .property');
+  let children = div.querySelectorAll(':scope > .property'); // only 1: div.array
 
   for (let child of children) {
-    object = readChild(child, object); // returning good array
+    object = readChild(child, object); // arrayDiv, jsonObject
+    console.log(object); // 4x undefined
   }
-  
+
   return object;
 }
 
@@ -195,38 +190,34 @@ const saveJsonInner = (div, object) => {
 const readChild = (div, object) => { // should i create new working object to change/return?
 
   if (div.classList.contains('array')) {
-    return readDivArray(div, object);
+    return readDivArray(div); // creates array for recursion on children
   }
 
   else if (div.classList.contains('object-simple')) {
-    return readDivSimple(div, object); // gets key+value from 'child', returns and modifies 'object'
+    return readDivSimple(div, object); // returns key+value object
   }
 
   else if (div.classList.contains('object-complex')) {
-    return readDivComplex(div, object); // creates and returns new object, which is passed in recursion on 'div'
+    return readDivComplex(div, object); // creates new object for recursion on 'div'
+  }
+
+  else if (div.classList.contains('object-primitive')) {
+    return readDivPrimitive(div, object); // returns value
   }
 
 }
 
 
-const readDivArray = (arrayDiv, object) => {
+const readDivArray = (arrayDiv) => {
   let children = arrayDiv.querySelectorAll(':scope > .property');
   let array = new Array();
 
   children.forEach((child) => {
     let e = new Object();
-    array.push(readChild(child, e));
+    array.push(readChild(child, e)); // if 'object' is used here, all array elements have the value of the last element
   })
 
   return array;
-}
-
-const readDivSimple = (simpleDiv, object) => {
-  let key = simpleDiv.querySelector('.key').value;
-  let value = simpleDiv.querySelector('.value').value;
-  object[key] = value;
-
-  return object;
 }
 
 const readDivComplex = (complexDiv, object) => {
@@ -237,16 +228,24 @@ const readDivComplex = (complexDiv, object) => {
   return object;
 }
 
+const readDivSimple = (simpleDiv, object) => {
+  let key = simpleDiv.querySelector('.key').value;
+  let value = simpleDiv.querySelector('.value').value;
+  object[key] = value;
 
+  return object;
+}
+
+const readDivPrimitive = (primitiveDiv, object) => {
+  let value = primitiveDiv.querySelector('.value').value;
+  return value;
+}
 
 
 
 
 
 // DOWNLOAD
-// https://stackoverflow.com/questions/34156282/how-do-i-save-json-to-local-text-file
-// solution for larger files: https://github.com/eligrey/FileSaver.js
-
 function downloadJson() {
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([JSON.stringify(json, null, 2)], {
@@ -257,4 +256,3 @@ function downloadJson() {
   a.click();
   document.body.removeChild(a);
 }
-
