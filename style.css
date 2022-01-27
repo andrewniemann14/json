@@ -33,6 +33,7 @@ body {
 /* BODY */
 #foundation {
   margin-left: 2em;
+  width: fit-content;
 }
 
 .property > .property {
@@ -52,7 +53,7 @@ body {
 .object-complex {
   font-weight: bold;
   transform: translate(-2em);
-  margin-bottom: .5em;
+  padding: 5px;
 }
 
 .object-simple {
@@ -60,11 +61,8 @@ body {
 }
 
 .array {
-  color: aqua;
-}
-
-.array-element {
-  color: aquamarine;
+  border: 1px solid black;
+  border-right: none;
 }
 
 .key {

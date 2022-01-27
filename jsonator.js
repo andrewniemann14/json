@@ -1,6 +1,23 @@
-// should probably use custom elements so i don't have classList manipulation all over the place
-// especially if i use a css framework
+// custom elements would be nice to separate the massive classlists to another file
+// but they have limited compatibility
+// i'll probably end up putting this in React/Angular anyway
 
+
+// TODO:
+// arrays still don't quite work right: test.json
+
+// should be 'children': [
+  // {'name': '', 'age': ''}, (div.object-complex, with two child div.object-simples)
+  // {'name': '', 'age': ''}
+  // ]
+// instead, it's 'children': [
+  // {'name': ''}, (div.object-simple x4)
+  // {'age': ''},
+  // {'name': ''},
+  // {'age': ''}
+  // ]
+
+// try to fix it on the writing side, without breaking the reading side
 
 let json;
 
@@ -25,8 +42,6 @@ function loadJsonFromFile(file) {
   })
   reader.readAsText(file); // this triggers the 'onload'
 }
-
-
 
 
 
@@ -78,10 +93,11 @@ const buildDiv = (div, object) => {
   }
 }
 
-// arguments doesn't work with arrow funcitons
+// arguments doesn't work with arrow functions
 function buildDivArray(parentDiv, key) {
   let newDiv = document.createElement("div");
-  newDiv.classList.add('property', 'array');
+  newDiv.classList.add('property', 'array'); // functional classes
+  // newDiv.classList.add('', ''); // style classes
 
   if (arguments.length == 2) {
     let keyElement = document.createElement("input");
