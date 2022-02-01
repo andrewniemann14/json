@@ -3,24 +3,7 @@
 // i'll probably end up putting this in React/Angular anyway
 
 
-// TODO:
-// arrays still don't quite work right: test.json
-
-// should be 'children': [
-  // {'name': '', 'age': ''}, (div.object-complex, with two child div.object-simples)
-  // {'name': '', 'age': ''}
-  // ]
-// instead, it's 'children': [
-  // {'name': ''}, (div.object-simple x4)
-  // {'age': ''},
-  // {'name': ''},
-  // {'age': ''}
-  // ]
-
-// try to fix it on the writing side, without breaking the reading side
-
 let json;
-
 
 // fetch doesn't work with local files, need to use Live Server
 const loadJsonFromURL = (url) => {
@@ -53,13 +36,16 @@ const printJson = (object, div) => {
   let newDiv;
 
   if (object.constructor.name === "Array") {
-    let arrayDiv = buildDivArray(div); // no key, just a container
-    for (let i = 0; i < object.length; i++) {
-      newDiv = printJson(object[i], arrayDiv);
+    console.log("caught an array!");
+    console.log("array length: ", object.length); // 4
+    let arrayDiv = buildDivArray(div);
+    for (let i = 0; i < object.length; i++) { // iterating 4 times
+      console.log(object[i]);
+      newDiv = printJson(object[i], arrayDiv); // building 2 div.object-simple per iteration
     }
 
   } else {
-    buildDiv(div, object)
+    newDiv = buildDiv(div, object)
   }
 
   return newDiv;
@@ -70,14 +56,14 @@ const buildDiv = (div, object) => {
 
   if (typeof object == 'object') {
     let keys = Object.keys(object);
+    // TODO: here is where i need to group both key-value pairs into a single div
 
     for (let i = 0; i < keys.length; i++) {
       let key = keys[i];
+      // console.log("key: ", key);
       let value = object[key];
+      // console.log("value: ", value);
 
-      // currently, key1 = [value1, value2, value3] is being called complex
-      // might need to be corrected later, but works fine for now
-      // because .array is checked before .complex
       if (typeof value == 'object') {
         newDiv = buildDivComplex(div, key); // returns <div.object-complex> with <input.key>
         printJson(value, newDiv);
@@ -111,6 +97,7 @@ function buildDivArray(parentDiv, key) {
 }
 
 
+
 const buildDivComplex = (parentDiv, key) => {
   let newDiv = document.createElement("div");
   newDiv.classList.add('property', 'object-complex', 'expanded')
@@ -141,8 +128,13 @@ const buildDivComplex = (parentDiv, key) => {
   keyElement.value = key;
   newDiv.appendChild(keyElement);
 
+  // valueDiv is needed to group multi-field objects
+  let valueDiv = document.createElement("div");
+  valueDiv.classList.add('property', 'value-div');
+  newDiv.appendChild(valueDiv);
+
   parentDiv.appendChild(newDiv);
-  return newDiv;
+  return valueDiv;
 }
 
 
@@ -156,7 +148,7 @@ const buildDivSimple = (parentDiv, key, value) => {
   newDiv.appendChild(keyElement);
 
   let valueElement = document.createElement("input");
-  valueElement.classList.add('value');
+  valueElement.classList.add('value', 'value-input');
   valueElement.value = value;
   newDiv.appendChild(valueElement);
 

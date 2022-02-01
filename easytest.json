@@ -1,0 +1,8 @@
+{
+  "topkey": {
+    "middlekey": {
+      "bottomkey1": "value1",
+      "bottomkey2": "value2"
+    }
+  }
+}
