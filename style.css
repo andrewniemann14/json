@@ -40,40 +40,60 @@ body {
 
 /* BODY */
 #foundation {
-  margin-left: 2em;
   width: fit-content;
 }
 
-.property > .property {
-  transform: translateX(3em);
+.property > .property:not(.array) {
+  transform: translateX(2em);
 }
 
+/* Expand/Collapse button */
 .button-expander {
   background: none;
   border: none;
   cursor: pointer;
+  position: absolute;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.object-complex > .key {
+  text-indent: 20px;
+}
+
+.button-expander > i {
+  object-fit: fill;
+}
+
+.key {
+  width: 120px;
+}
+
+.key, .value {
+  height: 1em;
 }
 
 .collapsed {
   display: none;
 }
 
+
 .object-complex {
   font-weight: bold;
-  transform: translate(-2em);
-  padding: 5px;
 }
 
 .object-simple {
   font-weight: normal;
 }
 
-.array {
+.array-element {
   border: 1px solid black;
   border-right: none;
 }
 
 .key {
+
   font-family: sans-serif;
   font-weight: bold;
   background: lightgray;
