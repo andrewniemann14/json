@@ -1,5 +1,5 @@
-// polyfill to let the :scope pseudoclass work in Internet Explorer and older browser versions
 // https://stackoverflow.com/questions/6481612/queryselector-search-immediate-children
+// polyfill to let the :scope pseudoclass work in Internet Explorer and older browser versions
 
 (function(doc, proto) {
   try { // check if browser supports :scope natively
