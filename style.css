@@ -5,6 +5,10 @@ body {
 
 
 /* INPUT */
+.input__section {
+  margin: 1em;
+}
+
 .input__form {
   display: none;
 }
@@ -15,6 +19,10 @@ body {
 
 
 /* TOOLBAR */
+.toolbar__section {
+
+}
+
 .toolbar__button {
   height: 4em;
   width: 4em;

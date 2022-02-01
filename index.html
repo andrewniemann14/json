@@ -16,20 +16,21 @@
 
       <select class="input__select" id="inputSelect">
         <option class="input__select-option">Upload file</option>
-        <option class="input__select-option">Paste URL</option>
+        <option class="input__select-option" selected>Paste URL</option>
       </select>
-
-      <div class="input__form input__form--file input__show">
+      
+      <div class="input__form input__form--file">
         <input type="file" id="fileInput" accept=".json" multiple>
         <!-- <button id="removeFile" style="color: red;">x</button> -->
         <button id="submitFile" type="submit">Submit</button>
       </div>
-
-      <div class="input__form input__form--url">
+      
+      <div class="input__form input__form--url input__show">
         <button id="pasteURL"><i class=""></i></button>
         <input type="text" id="urlInput" value="test.json">
         <button id="submitURL" type="submit">Submit</button>
       </div>
+
     </section>
     
     <section class="toolbar__section">

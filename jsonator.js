@@ -35,13 +35,12 @@ function loadJsonFromFile(file) {
 const printJson = (object, div) => {
   let newDiv;
 
+  // merge divElement into divArray, like we did with readDiv...
   if (object.constructor.name === "Array") {
-    console.log("caught an array!");
-    console.log("array length: ", object.length); // 4
     let arrayDiv = buildDivArray(div);
-    for (let i = 0; i < object.length; i++) { // iterating 4 times
-      console.log(object[i]);
-      newDiv = printJson(object[i], arrayDiv); // building 2 div.object-simple per iteration
+    for (let i = 0; i < object.length; i++) {
+      let containerDiv = buildDivElement(arrayDiv)
+      printJson(object[i], containerDiv);
     }
 
   } else {
@@ -51,27 +50,25 @@ const printJson = (object, div) => {
   return newDiv;
 }
 
+
 const buildDiv = (div, object) => {
   let newDiv;
 
   if (typeof object == 'object') {
     let keys = Object.keys(object);
-    // TODO: here is where i need to group both key-value pairs into a single div
 
     for (let i = 0; i < keys.length; i++) {
       let key = keys[i];
-      // console.log("key: ", key);
       let value = object[key];
-      // console.log("value: ", value);
 
       if (typeof value == 'object') {
         newDiv = buildDivComplex(div, key); // returns <div.object-complex> with <input.key>
         printJson(value, newDiv);
-      }
-      else {
+      } else {
         newDiv = buildDivSimple(div, key, value); // returns <div.object-simple> with <input.key>, <input.value>
       }
-    }
+
+    } // end for loop
   }
   
   else {
@@ -85,17 +82,24 @@ function buildDivArray(parentDiv, key) {
   newDiv.classList.add('property', 'array'); // functional classes
   // newDiv.classList.add('', ''); // style classes
 
-  if (arguments.length == 2) {
-    let keyElement = document.createElement("input");
-    keyElement.classList.add('key');
-    keyElement.value = key;
-    newDiv.appendChild(keyElement);
-  }
+  // if (arguments.length == 2) {
+  //   let keyElement = document.createElement("input");
+  //   keyElement.classList.add('key');
+  //   keyElement.value = key;
+  //   newDiv.appendChild(keyElement);
+  // }
 
   parentDiv.appendChild(newDiv);
   return newDiv;
 }
 
+function buildDivElement(parentDiv) {
+  let newDiv = document.createElement("div");
+  newDiv.classList.add('property', 'array-element');
+  
+  parentDiv.appendChild(newDiv);
+  return newDiv;
+}
 
 
 const buildDivComplex = (parentDiv, key) => {
@@ -128,13 +132,8 @@ const buildDivComplex = (parentDiv, key) => {
   keyElement.value = key;
   newDiv.appendChild(keyElement);
 
-  // valueDiv is needed to group multi-field objects
-  let valueDiv = document.createElement("div");
-  valueDiv.classList.add('property', 'value-div');
-  newDiv.appendChild(valueDiv);
-
   parentDiv.appendChild(newDiv);
-  return valueDiv;
+  return newDiv;
 }
 
 
@@ -184,18 +183,17 @@ const saveJsonOuter = (div, object) => {
 
 
 const saveJsonInner = (div, object) => {
-  let children = div.querySelectorAll(':scope > .property'); // only 1: div.array
+  let children = div.querySelectorAll(':scope > .property');
 
   for (let child of children) {
-    object = readChild(child, object); // arrayDiv, jsonObject
-    console.log(object); // 4x undefined
+    object = readChild(child, object);
   }
 
   return object;
 }
 
 
-const readChild = (div, object) => { // should i create new working object to change/return?
+const readChild = (div, object) => {
 
   if (div.classList.contains('array')) {
     return readDivArray(div); // creates array for recursion on children
@@ -210,21 +208,24 @@ const readChild = (div, object) => { // should i create new working object to ch
   }
 
   else if (div.classList.contains('object-primitive')) {
-    return readDivPrimitive(div, object); // returns value
+    return readDivPrimitive(div); // returns value
   }
 
 }
 
-
 const readDivArray = (arrayDiv) => {
-  let children = arrayDiv.querySelectorAll(':scope > .property');
+  let elements = arrayDiv.querySelectorAll(':scope > .property');
   let array = new Array();
 
-  children.forEach((child) => {
-    let e = new Object();
-    array.push(readChild(child, e)); // if 'object' is used here, all array elements have the value of the last element
+  elements.forEach((element) => {
+    let children = element.querySelectorAll(':scope > .property');
+    let o = new Object();
+    children.forEach((child) => {
+      readChild(child, o);
+    })
+    array.push(o);
   })
-
+  console.log(array);
   return array;
 }
 
@@ -244,7 +245,7 @@ const readDivSimple = (simpleDiv, object) => {
   return object;
 }
 
-const readDivPrimitive = (primitiveDiv, object) => {
+const readDivPrimitive = (primitiveDiv) => {
   let value = primitiveDiv.querySelector('.value').value;
   return value;
 }
