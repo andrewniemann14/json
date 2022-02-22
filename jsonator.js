@@ -1,10 +1,12 @@
-// custom elements would be nice to separate the massive classlists to another file
-// but they have limited compatibility
-// i'll probably end up putting this in React/Angular anyway
+// next up: adding/removing array elements
+// best approach is probably to work with the HTML, copying/deleting divs
+// then the object side will follow on the next save
+
+// then, adding/removing properties, using the same approach
 
 
 let json;
-
+/*
 // fetch doesn't work with local files, need to use Live Server
 const loadJsonFromURL = (url) => {
   topDiv.innerHTML = ''; // should move/merge this somewhere
@@ -27,9 +29,9 @@ function loadJsonFromFile(file) {
 }
 
 
+*/
 
-
-
+/*
 
 // DISPLAY - MAIN FUNCTION
 const printJson = (object, div) => {
@@ -96,7 +98,14 @@ function buildDivArray(parentDiv, key) {
 function buildDivElement(parentDiv) {
   let newDiv = document.createElement("div");
   newDiv.classList.add('property', 'array-element');
-  
+
+  let button = document.createElement("button")
+  button.classList.add('button-add-array-element');
+  let i = document.createElement("i");
+  i.classList.add("fas", "fa-plus")
+  button.appendChild(i);
+  newDiv.appendChild(button);
+
   parentDiv.appendChild(newDiv);
   return newDiv;
 }
@@ -110,7 +119,7 @@ const buildDivComplex = (parentDiv, key) => {
   let button = document.createElement("button")
   button.classList.add('button-expander');
   let i = document.createElement("i");
-  i.classList.add("fas", "fa-minus")
+  i.classList.add("fas", "fa-chevron-down")
   button.appendChild(i);
 
   // EXPAND/COLLAPSE - add functionality
@@ -121,8 +130,8 @@ const buildDivComplex = (parentDiv, key) => {
       e.classList.toggle('collapsed');
     })
     let iconClass = button.children.item(0).classList;
-    iconClass.toggle('fa-plus');
-    iconClass.toggle('fa-minus');
+    iconClass.toggle('fa-chevron-right');
+    iconClass.toggle('fa-chevron-down');
   })
 
   newDiv.appendChild(button);
@@ -167,10 +176,10 @@ const buildDivPrimitive = (parentDiv, object) => {
   newDiv.appendChild(valueElement);
   parentDiv.appendChild(newDiv);
 }
+*/
 
 
-
-
+/*
 //  Editing Mode unlock input fields, maybe additional level of lock for keys?
 
 
@@ -252,8 +261,6 @@ const readDivPrimitive = (primitiveDiv) => {
 
 
 
-
-
 // DOWNLOAD
 function downloadJson() {
   const a = document.createElement("a");
@@ -265,3 +272,4 @@ function downloadJson() {
   a.click();
   document.body.removeChild(a);
 }
+*/
