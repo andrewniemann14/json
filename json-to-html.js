@@ -68,8 +68,11 @@ function buildDivArray(parentDiv, key) {
 function buildDivElement(parentDiv) {
   let newDiv = document.createElement("div");
   newDiv.classList.add('property', 'array-element');
-
+  
   // CLONE/DELETE - basic HTML elements
+  let buttonsDiv = document.createElement("div");
+  buttonsDiv.classList.add('array-element-buttons');
+  
   let button1 = document.createElement("button")
   let button2 = document.createElement("button")
   button1.classList.add('button-clone-array-element');
@@ -84,6 +87,10 @@ function buildDivElement(parentDiv) {
   // CLONE - functionality
   button1.addEventListener('click', () => {
     parentDiv.appendChild(newDiv.cloneNode(true));
+    // event listeners are not cloned, so need to save JSON and reload page so that clone divs are built properly
+    saveJsonOuter(topDiv, json);
+    topDiv.innerHTML = '';
+    printJson(json, topDiv);
   })
 
   // DELETE - functionality
@@ -91,9 +98,9 @@ function buildDivElement(parentDiv) {
     newDiv.remove();
   })
 
-  newDiv.appendChild(button1);
-  newDiv.appendChild(button2);
-
+  buttonsDiv.appendChild(button1);
+  buttonsDiv.appendChild(button2);
+  newDiv.appendChild(buttonsDiv);
   parentDiv.appendChild(newDiv);
   return newDiv;
 }
