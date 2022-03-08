@@ -23,11 +23,11 @@ document.getElementById('downloadJson').addEventListener('click', downloadJson);
 document.getElementById('saveJson').addEventListener('click', () => saveJsonOuter(topDiv, json));
 
 
-document.getElementById('editJson').addEventListener('click', () => {
-  console.log("editing mode checkbox clicked");
-})
+// document.getElementById('editJson').addEventListener('click', () => {
+//   console.log("editing mode checkbox clicked");
+// })
 
-document.getElementById('refreshJson').addEventListener('click', () => {
+document.getElementById('resetJson').addEventListener('click', () => {
   topDiv.innerHTML = '';
   printJson(json, topDiv);
 })
