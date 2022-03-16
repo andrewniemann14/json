@@ -50,17 +50,23 @@ function buildDivArray(parentDiv, key) {
   newDiv.classList.add('property', 'array'); // functional classes
   // newDiv.classList.add('', ''); // style classes
 
-  // (functionless) button to add element to an array
-    let button = document.createElement("button")
-    button.classList.add('button-add-array-element');
-    let i = document.createElement("i");
-    i.classList.add("fas", "fa-plus")
-    button.appendChild(i);
+  // TODO: button to add name-value pair to array or object-complex
+  // TODO: ability to change type of object
+  
+  // button to add new, empty element to an array
+  let button = document.createElement("button")
+  button.classList.add('button-add-array-element');
+  let i = document.createElement("i");
+  i.classList.add("fas", "fa-plus")
+  button.appendChild(i);
 
-    // button.addEventListener()
+  button.addEventListener('click', () => {
+    let emptyElement = buildDivElement(newDiv);
+    emptyElement.classList.add('property', 'array-element');
+    newDiv.appendChild(emptyElement);
+  })
 
-    newDiv.appendChild(button)
-
+  newDiv.appendChild(button)
   parentDiv.appendChild(newDiv);
   return newDiv;
 }
